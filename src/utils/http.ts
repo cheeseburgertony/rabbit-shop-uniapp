@@ -32,3 +32,50 @@ const httpInterceptor = {
 uni.addInterceptor('request', httpInterceptor)
 // 拦截 uploadFile 文件上传
 uni.addInterceptor('uploadFile', httpInterceptor)
+
+// 声明一个接口(类型)
+interface Data<T> {
+  code: string
+  msg: string
+  result: T
+}
+
+// 请求函数封装
+export const http = <T>(options: UniApp.RequestOptions) => {
+  // 返回一个Promise方便进行数据获取
+  // 添加类型
+  return new Promise<Data<T>>((resolve, reject) => {
+    uni.request({
+      ...options,
+      success(res) {
+        // 这里使用类型断言来进行类型的更加确定
+        // 根据返回的状态码进行进一步判断
+        // 状态码为 2xx, 成功返回
+        if (res.statusCode >= 200 && res.statusCode < 300) {
+          resolve(res.data as Data<T>)
+        } else if (res.statusCode === 401) {
+          // token失效或者有问题 清除本地数据并且跳转到登录页 并且reject出去
+          const memberStore = useMemberStore()
+          memberStore.clearProfile()
+          uni.navigateTo({ url: '/pages/login/login' })
+          reject(res)
+        } else {
+          // 其他错误 进行一个轻提示
+          uni.showToast({
+            icon: 'none',
+            title: (res.data as Data<T>).msg || '请求错误',
+          })
+        }
+      },
+      // 响应失败
+      fail(err) {
+        // 进行提示
+        uni.showToast({
+          icon: 'none',
+          title: '网络错误,请换个网络试试',
+        })
+        reject(err)
+      },
+    })
+  })
+}
