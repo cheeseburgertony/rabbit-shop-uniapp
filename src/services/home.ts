@@ -1,7 +1,7 @@
-import type { BannerItem, CategoryItem } from '@/types/home'
+import type { BannerItem, CategoryItem, HotItem } from '@/types/home'
 import { http } from '@/utils/http'
 
-// 获取轮播图数据
+// 首页-广告区域-小程序
 export const getHomeBannerAPI = (distributionSite = 1) =>
   http<BannerItem[]>({
     url: '/home/banner',
@@ -11,9 +11,16 @@ export const getHomeBannerAPI = (distributionSite = 1) =>
     },
   })
 
-// 获取前台分类数据
+// 首页-前台分类-小程序
 export const getHomeCategoryAPI = () =>
   http<CategoryItem[]>({
     url: '/home/category/mutli',
+    method: 'GET',
+  })
+
+// 首页-热门推荐-小程序
+export const getHomeHotAPI = () =>
+  http<HotItem[]>({
+    url: '/home/hot/mutli',
     method: 'GET',
   })
