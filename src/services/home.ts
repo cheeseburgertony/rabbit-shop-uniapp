@@ -1,4 +1,4 @@
-import type { BannerItem } from '@/types/home'
+import type { BannerItem, CategoryItem } from '@/types/home'
 import { http } from '@/utils/http'
 
 // 获取轮播图数据
@@ -13,7 +13,7 @@ export const getHomeBannerAPI = (distributionSite = 1) =>
 
 // 获取前台分类数据
 export const getHomeCategoryAPI = () =>
-  http({
+  http<CategoryItem[]>({
     url: '/home/category/mutli',
     method: 'GET',
   })
