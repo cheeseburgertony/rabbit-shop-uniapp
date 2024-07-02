@@ -5,7 +5,7 @@ import type { GuessItem } from '@/types/home'
 import { onMounted, ref } from 'vue'
 
 const pageParams: Required<PageParams> = {
-  page: 30,
+  page: 1,
   pageSize: 10,
 }
 
@@ -20,7 +20,7 @@ const getHomeGoodsGuessLikeData = async () => {
   guessList.value.push(...res.result.items)
   // 判断页数是否大于最大页数
   if (pageParams.page < res.result.pages) {
-    // 页数++以便获取下一个页的数据
+    // 页数++以便获取下一页的数据
     pageParams.page++
   } else {
     finish.value = true
@@ -31,8 +31,15 @@ onMounted(() => {
   getHomeGoodsGuessLikeData()
 })
 
+// 重置数据
+const resetData = () => {
+  pageParams.page = 1
+  guessList.value = []
+  finish.value = false
+}
 // 将组件内方法暴露出去给父组件使用
 defineExpose({
+  resetData,
   getMore: getHomeGoodsGuessLikeData,
 })
 </script>

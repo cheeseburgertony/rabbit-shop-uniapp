@@ -42,13 +42,37 @@ onLoad(() => {
   getHomeCategoryData()
   getHomeHotData()
 })
+
+// 自定义下拉刷新被触发
+const isTrigger = ref(false)
+const onRefresherrefresh = async () => {
+  isTrigger.value = true
+  // 使用Promise.all来让所有获取数据函数都执行完再执行下一步
+  // 如果让获取数据函数一个个获取数据会按顺序一个个来，可能会让用户等待时间过长
+  // 对于猜你喜欢页面要先重置数据再调用
+  guessRef.value?.resetData()
+  await Promise.all([
+    getHomeBannerData(),
+    getHomeCategoryData(),
+    getHomeHotData(),
+    guessRef.value?.getMore(),
+  ])
+  isTrigger.value = false
+}
 </script>
 
 <template>
   <!-- 自定义导航 -->
   <CustomNavbar></CustomNavbar>
   <!-- 滚动容器 -->
-  <scroll-view @scrolltolower="onScrolltolower" class="scroll-view" scroll-y>
+  <scroll-view
+    refresher-enabled
+    :refresher-triggered="isTrigger"
+    @refresherrefresh="onRefresherrefresh"
+    @scrolltolower="onScrolltolower"
+    class="scroll-view"
+    scroll-y
+  >
     <!-- 轮播图 -->
     <XtxSwiper :list="bannerList"></XtxSwiper>
     <!-- 前台分类 -->
