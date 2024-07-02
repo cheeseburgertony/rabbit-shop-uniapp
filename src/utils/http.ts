@@ -25,7 +25,6 @@ const httpInterceptor = {
     if (token) {
       options.header.Authorization = token
     }
-    console.log(options)
   },
 }
 // 拦截 request 请求

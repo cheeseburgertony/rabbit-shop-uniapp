@@ -1,20 +1,26 @@
 <script setup lang="ts">
 import { onLoad } from '@dcloudio/uni-app'
 import CustomNavbar from './components/CustomNavbar.vue'
-import { getHomeBannerAPI } from '@/services/home'
+import { getHomeBannerAPI, getHomeCategoryAPI } from '@/services/home'
 import { ref } from 'vue'
 import type { BannerItem } from '@/types/home'
 import CategoryPanel from './components/CategoryPanel.vue'
 
+// 获取banner数据
 const bannerList = ref<BannerItem[]>([])
-
 const getHomeBanner = async () => {
   const res = await getHomeBannerAPI()
   bannerList.value = res.result
 }
 
+// 获取前台分类数据
+const getHomeCategory = async () => {
+  const res = await getHomeCategoryAPI()
+}
+
 onLoad(() => {
   getHomeBanner()
+  getHomeCategory()
 })
 </script>
 

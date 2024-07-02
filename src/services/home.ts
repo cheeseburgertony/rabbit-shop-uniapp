@@ -10,3 +10,10 @@ export const getHomeBannerAPI = (distributionSite = 1) =>
       distributionSite,
     },
   })
+
+// 获取前台分类数据
+export const getHomeCategoryAPI = () =>
+  http({
+    url: '/home/category/mutli',
+    method: 'GET',
+  })
