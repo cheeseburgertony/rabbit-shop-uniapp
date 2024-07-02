@@ -5,18 +5,26 @@ import type { GuessItem } from '@/types/home'
 import { onMounted, ref } from 'vue'
 
 const pageParams: Required<PageParams> = {
-  page: 1,
+  page: 30,
   pageSize: 10,
 }
+
+const finish = ref(false)
 
 // 获取猜你喜欢数据
 const guessList = ref<GuessItem[]>([])
 const getHomeGoodsGuessLikeData = async () => {
+  if (finish.value) return uni.showToast({ icon: 'none', title: '没有数据了~' })
   const res = await getHomeGoodsGuessLikeAPI(pageParams)
   // 获取到数据后追加到原数组
   guessList.value.push(...res.result.items)
-  // 页数++以便获取下一个页的数据
-  pageParams.page++
+  // 判断页数是否大于最大页数
+  if (pageParams.page < res.result.pages) {
+    // 页数++以便获取下一个页的数据
+    pageParams.page++
+  } else {
+    finish.value = true
+  }
 }
 // 在组件被挂载后发送请求获取数据，这样组件在复用的时候只要被挂载就能获取数据
 onMounted(() => {
@@ -49,7 +57,7 @@ defineExpose({
       </view>
     </navigator>
   </view>
-  <view class="loading-text"> 正在加载... </view>
+  <view class="loading-text"> {{ finish ? '没有数据了~' : '正在加载...' }} </view>
 </template>
 
 <style lang="scss">
