@@ -4,6 +4,7 @@ import CustomNavbar from './components/CustomNavbar.vue'
 import { getHomeBannerAPI } from '@/services/home'
 import { ref } from 'vue'
 import type { BannerItem } from '@/types/home'
+import CategoryPanel from './components/CategoryPanel.vue'
 
 const bannerList = ref<BannerItem[]>([])
 
@@ -22,9 +23,13 @@ onLoad(() => {
   <CustomNavbar></CustomNavbar>
   <!-- 轮播图 -->
   <XtxSwiper :list="bannerList"></XtxSwiper>
+  <!-- 前台分类组件 -->
+  <CategoryPanel></CategoryPanel>
   <view>index</view>
 </template>
 
 <style lang="scss">
-//
+page {
+  background-color: #f7f7f7;
+}
 </style>
