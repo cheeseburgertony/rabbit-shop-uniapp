@@ -5,6 +5,7 @@ import { onLoad } from '@dcloudio/uni-app'
 import { ref } from 'vue'
 import AddressPanel from './components/AddressPanel.vue'
 import ServicePanel from './components/ServicePanel.vue'
+import PageSkeleton from './components/PageSkeleton.vue'
 
 // 获取屏幕边界到安全区域距离
 const { safeAreaInsets } = uni.getSystemInfoSync()
@@ -20,8 +21,10 @@ const getGoodsByIdData = async () => {
   goods.value = res.result
 }
 
-onLoad(() => {
-  getGoodsByIdData()
+const isFinish = ref(false)
+onLoad(async () => {
+  await getGoodsByIdData()
+  isFinish.value = true
 })
 
 // 轮播图切换
@@ -53,7 +56,7 @@ const onPopup = (name: typeof popupName.value) => {
 </script>
 
 <template>
-  <scroll-view scroll-y class="viewport">
+  <scroll-view v-if="isFinish" scroll-y class="viewport">
     <!-- 基本信息 -->
     <view class="goods">
       <!-- 商品主图 -->
@@ -143,6 +146,7 @@ const onPopup = (name: typeof popupName.value) => {
       </view>
     </view>
   </scroll-view>
+  <PageSkeleton v-else></PageSkeleton>
 
   <!-- 用户操作 -->
   <view class="toolbar" :style="{ paddingBottom: safeAreaInsets?.bottom + 'px' }">
