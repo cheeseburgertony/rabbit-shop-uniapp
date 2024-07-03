@@ -1,6 +1,6 @@
 // /src/pages/hot/hot.vue
 <script setup lang="ts">
-import { getHotRecommendAPI } from '@/utils/hot'
+import { getHotRecommendAPI } from '@/services/hot'
 import { onLoad } from '@dcloudio/uni-app'
 
 // 热门推荐页 标题和url
@@ -23,6 +23,7 @@ uni.setNavigationBarTitle({ title: curHot!.title })
 
 const getHotRecommendData = async () => {
   const res = await getHotRecommendAPI(curHot!.url)
+  console.log(res.result)
 }
 // 页面加载时发送请求
 onLoad(() => {
