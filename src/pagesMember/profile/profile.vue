@@ -66,12 +66,18 @@ const onBirthdayChange: UniHelper.DatePickerOnChange = (e) => {
 }
 
 // 修改地址
+let fullLocationCode: [string, string, string] = uni.getStorageSync('fullLocationCode') || [
+  '',
+  '',
+  '',
+]
 const onFullLocationChange: UniHelper.RegionPickerOnChange = (e) => {
   // 前端展示 直接文字
   profile.value.fullLocation = e.detail.value.join(' ')
-  // 发生给后端,需要提取其中的code 同步到store同时做持久化
-  // 如果下次不修改地址而修改其他,code参数的时候可以直接从store取出,防止为空
-  memberStore.setFullLocationCode(e.detail.code!)
+  // 发送给后端,需要提取其中的code 持久化到本地
+  // 如果下次不修改地址而修改其他,code参数的时候可以直接从本地取出,防止为空
+  fullLocationCode = e.detail.code!
+  uni.setStorageSync('fullLocationCode', fullLocationCode)
 }
 
 // 保存信息
@@ -82,9 +88,9 @@ const onSubmit = async () => {
     gender,
     birthday,
     profession,
-    provinceCode: memberStore.fullLocationCode[0],
-    cityCode: memberStore.fullLocationCode[1],
-    countyCode: memberStore.fullLocationCode[2],
+    provinceCode: fullLocationCode[0],
+    cityCode: fullLocationCode[1],
+    countyCode: fullLocationCode[2],
   })
   // 同步到Store
   memberStore.profile!.nickname = res.result.nickname
