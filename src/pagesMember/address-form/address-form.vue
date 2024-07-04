@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { postMemberAddress } from '@/services/address'
+import { postMemberAddressAPI } from '@/services/address'
 import { ref } from 'vue'
 
 // 表单数据
@@ -40,7 +40,7 @@ const onSwitchChange: UniHelper.SwitchOnChange = (e) => {
 // 提交表单
 const onSubmit = async () => {
   // 调用接口向后端发送数据
-  await postMemberAddress(form.value)
+  await postMemberAddressAPI(form.value)
   // 进行提示并且返回上一页
   uni.showToast({ icon: 'none', title: '添加成功' })
   setTimeout(() => {
@@ -85,7 +85,6 @@ const onSubmit = async () => {
   </view>
   <!-- 提交按钮 -->
   <button class="button" @tap="onSubmit">保存并使用</button>
-  {{ form }}
 </template>
 
 <style lang="scss">
