@@ -1,5 +1,9 @@
 <script setup lang="ts">
-import { getMemberAddressByIdAPI, postMemberAddressAPI } from '@/services/address'
+import {
+  getMemberAddressByIdAPI,
+  postMemberAddressAPI,
+  putMemberAddressByIdAPI,
+} from '@/services/address'
 import { onLoad } from '@dcloudio/uni-app'
 import { ref } from 'vue'
 
@@ -54,10 +58,17 @@ const onSwitchChange: UniHelper.SwitchOnChange = (e) => {
 
 // 提交表单
 const onSubmit = async () => {
-  // 调用接口向后端发送数据
-  await postMemberAddressAPI(form.value)
+  // 根据是否有id判断是修改地址还是新增地址
+  if (query.id) {
+    // 修改地址
+    await putMemberAddressByIdAPI(query.id, form.value)
+  } else {
+    // 新增地址
+    // 调用接口向后端发送数据
+    await postMemberAddressAPI(form.value)
+  }
   // 进行提示并且返回上一页
-  uni.showToast({ icon: 'none', title: '添加成功' })
+  uni.showToast({ icon: 'none', title: query.id ? '修改成功' : '添加成功' })
   setTimeout(() => {
     uni.navigateBack()
   }, 400)
