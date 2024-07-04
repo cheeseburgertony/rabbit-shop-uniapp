@@ -9,6 +9,14 @@ export const useMemberStore = defineStore(
     // 会员信息
     const profile = ref<LoginResult>()
 
+    // 城市代码
+    const fullLocationCode = ref<[string, string, string]>(['', '', ''])
+
+    // 修改城市代码
+    const setFullLocationCode = (arr: [string, string, string]) => {
+      fullLocationCode.value = arr
+    }
+
     // 保存会员信息，登录时使用
     const setProfile = (val: LoginResult) => {
       profile.value = val
@@ -22,8 +30,10 @@ export const useMemberStore = defineStore(
     // 记得 return
     return {
       profile,
+      fullLocationCode,
       setProfile,
       clearProfile,
+      setFullLocationCode,
     }
   },
   // TODO: 持久化
