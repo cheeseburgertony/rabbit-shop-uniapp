@@ -17,6 +17,37 @@ const getMemberProfileData = async () => {
 onLoad(() => {
   getMemberProfileData()
 })
+
+// 修改用户头像
+const onAvatarChange = () => {
+  uni.chooseMedia({
+    // 选择上传文件个数
+    count: 1,
+    // 文件类型
+    mediaType: ['image'],
+    success: (res) => {
+      // 取出本地图片的临时路径
+      const { tempFilePath } = res.tempFiles[0]
+      // 调用微信接口上传文件
+      uni.uploadFile({
+        url: '/member/profile/avatar',
+        name: 'file',
+        filePath: tempFilePath,
+        success: (res) => {
+          // 根据状态码判断是否上传成功
+          if (res.statusCode === 200) {
+            // 更新头像
+            profile.value!.avatar = JSON.parse(res.data).result.avatar
+            uni.showToast({ icon: 'success', title: '头像更新成功' })
+          } else {
+            uni.showToast({ icon: 'error', title: '出现错误' })
+          }
+          console.log(res)
+        },
+      })
+    },
+  })
+}
 </script>
 
 <template>
@@ -27,7 +58,7 @@ onLoad(() => {
       <view class="title">个人信息</view>
     </view>
     <!-- 头像 -->
-    <view class="avatar">
+    <view class="avatar" @tap="onAvatarChange">
       <view class="avatar-content">
         <image class="image" :src="profile?.avatar" mode="aspectFill" />
         <text class="text">点击修改头像</text>
@@ -202,6 +233,7 @@ page {
     .picker {
       flex: 1;
     }
+
     .placeholder {
       color: #808080;
     }
