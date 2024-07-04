@@ -6,8 +6,8 @@ import { ref } from 'vue'
 import type { BannerItem, CategoryItem, HotItem } from '@/types/home'
 import CategoryPanel from './components/CategoryPanel.vue'
 import HotPanel from './components/HotPanel.vue'
-import type { XtxGuessInstance } from '@/types/component'
 import PageSkeleton from './components/PageSkeleton.vue'
+import { useGuseeList } from '@/composables'
 
 // 获取banner数据
 const bannerList = ref<BannerItem[]>([])
@@ -31,12 +31,7 @@ const getHomeHotData = async () => {
 }
 
 // 滚动到底部
-const guessRef = ref<XtxGuessInstance>()
-const onScrolltolower = () => {
-  console.log('滚动到底部')
-  console.log(guessRef.value)
-  guessRef.value?.getMore()
-}
+const { guessRef, onScrolltolower } = useGuseeList()
 
 // 加载时触发
 const isLoading = ref(false)
