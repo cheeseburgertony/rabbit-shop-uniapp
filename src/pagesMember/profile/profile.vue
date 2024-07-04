@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { getMemberProfileAPI, putMemberProfileAPI } from '@/services/profile'
+import { useMemberStore } from '@/stores'
 import type { ProfileDetail } from '@/types/member'
 import { onLoad } from '@dcloudio/uni-app'
 import { ref } from 'vue'
+
+const memberStore = useMemberStore()
 
 // 获取屏幕边界到安全区域距离
 const { safeAreaInsets } = uni.getSystemInfoSync()
@@ -39,6 +42,8 @@ const onAvatarChange = () => {
           if (res.statusCode === 200) {
             // 更新头像
             profile.value!.avatar = JSON.parse(res.data).result.avatar
+            // 同步到Store
+            memberStore.profile!.avatar = profile.value.avatar
             uni.showToast({ icon: 'success', title: '头像更新成功' })
           } else {
             uni.showToast({ icon: 'error', title: '出现错误' })
@@ -55,7 +60,12 @@ const onSubmit = async () => {
   const res = await putMemberProfileAPI({
     nickname: profile.value.nickname,
   })
+  // 同步到Store
+  memberStore.profile!.nickname = res.result.nickname
   uni.showToast({ icon: 'success', title: '保存成功' })
+  setTimeout(() => {
+    uni.navigateBack()
+  }, 400)
   console.log(res)
 }
 </script>
