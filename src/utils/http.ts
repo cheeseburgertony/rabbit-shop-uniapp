@@ -13,7 +13,7 @@ const httpInterceptor = {
       options.url = baseURL + options.url
     }
     // 设置请求时间
-    options.timeout = 10000
+    options.timeout = 50000
     // 设置请求标识
     options.header = {
       ...options.header,
