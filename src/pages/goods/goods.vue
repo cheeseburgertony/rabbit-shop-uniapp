@@ -6,6 +6,7 @@ import { ref } from 'vue'
 import AddressPanel from './components/AddressPanel.vue'
 import ServicePanel from './components/ServicePanel.vue'
 import PageSkeleton from './components/PageSkeleton.vue'
+import type { SkuPopupLocaldata } from '@/components/vk-data-goods-sku-popup/vk-data-goods-sku-popup'
 
 // 获取屏幕边界到安全区域距离
 const { safeAreaInsets } = uni.getSystemInfoSync()
@@ -19,6 +20,22 @@ const goods = ref<GoodsResult>()
 const getGoodsByIdData = async () => {
   const res = await getGoodsByIdAPI(query.id)
   goods.value = res.result
+  // 拿到后端返回的数据后映射为SKU组件所需格式
+  localdata.value = {
+    _id: res.result.id,
+    name: res.result.name,
+    goods_thumb: res.result.mainPictures[0],
+    spec_list: res.result.specs.map((item) => ({ name: item.name, list: item.values })),
+    sku_list: res.result.skus.map((item) => ({
+      _id: item.id,
+      goods_id: res.result.id,
+      goods_name: res.result.name,
+      image: item.picture,
+      price: item.price * 100,
+      stock: item.inventory,
+      sku_name_arr: item.specs.map((val) => val.valueName),
+    })),
+  }
 }
 
 const isFinish = ref(false)
@@ -53,9 +70,18 @@ const onPopup = (name: typeof popupName.value) => {
   popupName.value = name
   popup.value?.open()
 }
+
+// 显示SKU组件
+const isShowSKU = ref(false)
+
+// 商品数据
+const localdata = ref({} as SkuPopupLocaldata)
 </script>
 
 <template>
+  <!-- SKU组件 -->
+  <vk-data-goods-sku-popup v-model="isShowSKU" :localdata="localdata" />
+
   <scroll-view v-if="isFinish" scroll-y class="viewport">
     <!-- 基本信息 -->
     <view class="goods">
@@ -87,7 +113,7 @@ const onPopup = (name: typeof popupName.value) => {
       <view class="action">
         <view class="item arrow">
           <text class="label">选择</text>
-          <text class="text ellipsis"> 请选择商品规格 </text>
+          <text class="text ellipsis" @tap="isShowSKU = true"> 请选择商品规格 </text>
         </view>
         <view class="item arrow" @tap="onPopup('address')">
           <text class="label">送至</text>
