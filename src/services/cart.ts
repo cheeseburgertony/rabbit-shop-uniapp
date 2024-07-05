@@ -23,3 +23,11 @@ export const deleteMemberCartAPI = (data: { ids: string[] }) =>
     url: '/member/cart',
     data,
   })
+
+// 修改购物车单品
+export const putMemberCartByIdAPI = (skuId: string, data: { selected?: boolean; count?: number }) =>
+  http({
+    method: 'PUT',
+    url: `/member/cart/${skuId}`,
+    data,
+  })

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { deleteMemberCartAPI, getMemberCartAPI } from '@/services/cart'
+import type { InputNumberBoxEvent } from '@/components/vk-data-input-number-box/vk-data-input-number-box'
+import { deleteMemberCartAPI, getMemberCartAPI, putMemberCartByIdAPI } from '@/services/cart'
 import { useMemberStore } from '@/stores'
 import type { CartItem } from '@/types/cart'
 import { onShow } from '@dcloudio/uni-app'
@@ -37,6 +38,12 @@ const onDelete = (id: string) => {
     },
   })
 }
+
+// 修改单品数量
+const onChangeCount = async (e: InputNumberBoxEvent) => {
+  // 发送修改数量请求
+  await putMemberCartByIdAPI(e.index, { count: e.value })
+}
 </script>
 
 <template>
@@ -71,11 +78,13 @@ const onDelete = (id: string) => {
                 </view>
               </navigator>
               <!-- 商品数量 -->
-              <view class="count">
-                <text class="text">-</text>
-                <input class="input" type="number" :value="item.count" />
-                <text class="text">+</text>
-              </view>
+              <vk-data-input-number-box
+                v-model="item.count"
+                :min="1"
+                :max="item.stock"
+                :index="item.skuId"
+                @change="onChangeCount"
+              />
             </view>
             <!-- 右侧删除按钮 -->
             <template #right>
