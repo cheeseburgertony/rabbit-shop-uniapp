@@ -9,7 +9,7 @@ import 'vue'
 declare module 'vue' {
   export interface GlobalComponents {
     XtxSwiper: typeof XtxSwiper
-    XtxGuess: XtxGuess
+    XtxGuess: typeof XtxGuess
   }
 }
 

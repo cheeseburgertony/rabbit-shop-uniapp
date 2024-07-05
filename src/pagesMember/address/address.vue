@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getMemberAddressAPI } from '@/services/address'
+import { deleteMemberAddressByIdAPI, getMemberAddressAPI } from '@/services/address'
 import type { AddressItem } from '@/types/address'
 import { onShow } from '@dcloudio/uni-app'
 import { ref } from 'vue'
@@ -11,6 +11,24 @@ const getMemberAddressData = async () => {
   addressList.value = res.result
 }
 
+// 删除地址
+const onDeleteAddress = (id: string) => {
+  // 弹窗二次确认
+  uni.showModal({
+    content: '是否删除',
+    success: async (res) => {
+      if (res.confirm) {
+        // 发送删除地址请求
+        await deleteMemberAddressByIdAPI(id)
+        // 给个提示
+        uni.showToast({ icon: 'success', title: '删除成功' })
+        // 删除后获取最新数据列表
+        getMemberAddressData()
+      }
+    },
+  })
+}
+
 onShow(() => {
   getMemberAddressData()
 })
@@ -20,8 +38,8 @@ onShow(() => {
   <view class="viewport">
     <!-- 地址列表 -->
     <scroll-view class="scroll-view" scroll-y>
-      <view v-if="addressList" class="address">
-        <view class="address-list" v-for="item in addressList" :key="item.id">
+      <uni-swipe-action v-if="addressList.length" class="address">
+        <uni-swipe-action-item class="address-list" v-for="item in addressList" :key="item.id">
           <!-- 收货地址项 -->
           <view class="item">
             <view class="item-content">
@@ -40,8 +58,11 @@ onShow(() => {
               </navigator>
             </view>
           </view>
-        </view>
-      </view>
+          <template #right>
+            <button @tap="onDeleteAddress(item.id)" class="delete-button">删除</button>
+          </template>
+        </uni-swipe-action-item>
+      </uni-swipe-action>
       <view v-else class="blank">暂无收货地址</view>
     </scroll-view>
     <!-- 添加按钮 -->

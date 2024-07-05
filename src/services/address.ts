@@ -31,3 +31,10 @@ export const putMemberAddressByIdAPI = (id: string, data: AddressParams) =>
     url: `/member/address/${id}`,
     data,
   })
+
+// 删除收货地址
+export const deleteMemberAddressByIdAPI = (id: string) =>
+  http({
+    method: 'DELETE',
+    url: `/member/address/${id}`,
+  })
