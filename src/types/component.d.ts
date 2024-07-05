@@ -5,6 +5,7 @@
  */
 import XtxSwiper from '@/components/XtxSwiper.vue'
 import XtxGuess from '@/components/XtxGuess.vue'
+import AddressPanel from '@/pages/goods/components/AddressPanel.vue'
 import 'vue'
 declare module 'vue' {
   export interface GlobalComponents {
@@ -15,3 +16,4 @@ declare module 'vue' {
 
 // 猜你喜欢组件实例类型
 export type XtxGuessInstance = InstanceType<typeof XtxGuess>
+export type AddressPanelInstance = InstanceType<typeof AddressPanel>

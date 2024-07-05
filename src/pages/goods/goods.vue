@@ -2,7 +2,7 @@
 import { getGoodsByIdAPI } from '@/services/goods'
 import type { GoodsResult } from '@/types/goods'
 import { onLoad } from '@dcloudio/uni-app'
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import AddressPanel from './components/AddressPanel.vue'
 import ServicePanel from './components/ServicePanel.vue'
 import PageSkeleton from './components/PageSkeleton.vue'
@@ -12,6 +12,8 @@ import type {
   SkuPopupLocaldata,
 } from '@/components/vk-data-goods-sku-popup/vk-data-goods-sku-popup'
 import { postMemberCartAPI } from '@/services/cart'
+import type { AddressPanelInstance } from '@/types/component'
+import { useAddressStore } from '@/stores/modules/address'
 
 // 获取屏幕边界到安全区域距离
 const { safeAreaInsets } = uni.getSystemInfoSync()
@@ -106,6 +108,18 @@ const onAddCart = async (e: SkuPopupEvent) => {
   uni.showToast({ icon: 'success', title: '添加成功' })
   isShowSku.value = false
 }
+
+// 立即购买
+const onBuyNow = (e: SkuPopupEvent) => {
+  // 跳转到订单页面并且携带参数
+  uni.navigateTo({
+    url: `/pagesOrder/create/create?skuId=${e._id}&count=${e.buy_num}`,
+  })
+  isShowSku.value = false
+}
+
+// 获取选择的地址
+const addressStore = useAddressStore()
 </script>
 
 <template>
@@ -123,6 +137,7 @@ const onAddCart = async (e: SkuPopupEvent) => {
       backgroundColor: '#E9F8F5',
     }"
     @add-cart="onAddCart"
+    @buy-now="onBuyNow"
   />
 
   <scroll-view v-if="isFinish" scroll-y class="viewport">
@@ -160,7 +175,11 @@ const onAddCart = async (e: SkuPopupEvent) => {
         </view>
         <view class="item arrow" @tap="onPopup('address')">
           <text class="label">送至</text>
-          <text class="text ellipsis"> 请选择收获地址 </text>
+          <text class="text ellipsis" v-if="addressStore.selectedAddress">
+            {{ addressStore.selectedAddress.fullLocation }}
+            {{ addressStore.selectedAddress.address }}
+          </text>
+          <text class="text ellipsis" v-else> 请选择收获地址 </text>
         </view>
         <view class="item arrow" @tap="onPopup('service')">
           <text class="label">服务</text>
@@ -236,7 +255,11 @@ const onAddCart = async (e: SkuPopupEvent) => {
 
   <!-- 弹出层 -->
   <uni-popup ref="popup" type="bottom" background-color="#fff">
-    <AddressPanel v-if="popupName === 'address'" @close="popup?.close"></AddressPanel>
+    <AddressPanel
+      ref="addressRef"
+      v-if="popupName === 'address'"
+      @close="popup?.close"
+    ></AddressPanel>
     <ServicePanel v-if="popupName === 'service'" @close="popup?.close"></ServicePanel>
   </uni-popup>
 </template>

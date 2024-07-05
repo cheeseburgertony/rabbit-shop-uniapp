@@ -1,9 +1,47 @@
 <script setup lang="ts">
+import { getMemberAddressAPI } from '@/services/address'
+import { useAddressStore } from '@/stores/modules/address'
+import type { AddressItem } from '@/types/address'
+import { onMounted, ref } from 'vue'
 // 子组件调用父组件的方法
 // TS写法  (event: '要调用的方法的名称'): 返回值类型
 const emit = defineEmits<{
   (event: 'close'): void
 }>()
+
+// 如果是地址则发送获取地址请求
+const addressList = ref<AddressItem[]>([])
+const getMemberAddressData = async () => {
+  const res = await getMemberAddressAPI()
+  addressList.value = res.result
+  console.log(111)
+}
+onMounted(() => {
+  getMemberAddressData()
+})
+
+// 选择地址
+const onSelectAddress = (item: AddressItem) => {
+  // 排他思想先去除掉默认的,然后给当前的加上默认
+  addressList.value.forEach((item) => (item.isDefault = 0))
+  item.isDefault = 1
+}
+
+// 新建地址
+const onCreateAddress = () => {
+  uni.navigateTo({ url: '/pagesMember/address-form/address-form' })
+  emit('close')
+}
+
+// 点击确定
+const addressStore = useAddressStore()
+const selectedAddress = ref<AddressItem>()
+const onConfirm = () => {
+  selectedAddress.value = addressList.value.find((item) => item.isDefault)
+  // 保存到仓库
+  addressStore.changeSelectedAddress(selectedAddress.value!)
+  emit('close')
+}
 </script>
 
 <template>
@@ -14,25 +52,15 @@ const emit = defineEmits<{
     <view class="title">配送至</view>
     <!-- 内容 -->
     <view class="content">
-      <view class="item">
-        <view class="user">李明 13824686868</view>
-        <view class="address">北京市顺义区后沙峪地区安平北街6号院</view>
-        <text class="icon icon-checked"></text>
-      </view>
-      <view class="item">
-        <view class="user">王东 13824686868</view>
-        <view class="address">北京市顺义区后沙峪地区安平北街6号院</view>
-        <text class="icon icon-ring"></text>
-      </view>
-      <view class="item">
-        <view class="user">张三 13824686868</view>
-        <view class="address">北京市朝阳区孙河安平北街6号院</view>
-        <text class="icon icon-ring"></text>
+      <view class="item" v-for="item in addressList" :key="item.id" @tap="onSelectAddress(item)">
+        <view class="user">{{ item.receiver }} {{ item.contact }}</view>
+        <view class="address">{{ item.fullLocation }}{{ item.address }}</view>
+        <text class="icon" :class="item.isDefault ? 'icon-checked' : 'icon-ring'"></text>
       </view>
     </view>
     <view class="footer">
-      <view class="button primary"> 新建地址 </view>
-      <view v-if="false" class="button primary">确定</view>
+      <view v-if="addressList.length" class="button primary" @tap="onConfirm">确定</view>
+      <view v-else class="button primary" @tap="onCreateAddress"> 新建地址 </view>
     </view>
   </view>
 </template>
