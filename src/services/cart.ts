@@ -31,3 +31,13 @@ export const putMemberCartByIdAPI = (skuId: string, data: { selected?: boolean; 
     url: `/member/cart/${skuId}`,
     data,
   })
+
+// 购物车全选/取消全选
+export const putMemberCartSelectedAPI = (selected: boolean) =>
+  http({
+    method: 'PUT',
+    url: '/member/cart/selected',
+    data: {
+      selected,
+    },
+  })
