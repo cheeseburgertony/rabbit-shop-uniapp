@@ -15,3 +15,11 @@ export const getMemberCartAPI = () =>
     method: 'GET',
     url: '/member/cart',
   })
+
+// 删除/清空购物车单品
+export const deleteMemberCartAPI = (data: { ids: string[] }) =>
+  http({
+    method: 'DELETE',
+    url: '/member/cart',
+    data,
+  })

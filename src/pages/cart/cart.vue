@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getMemberCartAPI } from '@/services/cart'
+import { deleteMemberCartAPI, getMemberCartAPI } from '@/services/cart'
 import { useMemberStore } from '@/stores'
 import type { CartItem } from '@/types/cart'
 import { onShow } from '@dcloudio/uni-app'
@@ -22,6 +22,21 @@ onShow(() => {
     getMemberCartData()
   }
 })
+
+// 删除购物车单品
+const onDelete = (id: string) => {
+  uni.showModal({
+    content: '确认删除',
+    success: async (res) => {
+      if (res.confirm) {
+        // 发送删除请求
+        await deleteMemberCartAPI({ ids: [id] })
+        uni.showToast({ title: '删除成功' })
+        getMemberCartData()
+      }
+    },
+  })
+}
 </script>
 
 <template>
@@ -65,7 +80,7 @@ onShow(() => {
             <!-- 右侧删除按钮 -->
             <template #right>
               <view class="cart-swipe-right">
-                <button class="button delete-button">删除</button>
+                <button @tap="onDelete(item.skuId)" class="button delete-button">删除</button>
               </view>
             </template>
           </uni-swipe-action-item>
