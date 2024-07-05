@@ -72,15 +72,32 @@ const onPopup = (name: typeof popupName.value) => {
 }
 
 // 显示SKU组件
-const isShowSKU = ref(false)
-
+const isShowSku = ref(false)
 // 商品数据
 const localdata = ref({} as SkuPopupLocaldata)
+// 弹窗模式
+enum SkuMode {
+  Both = 1,
+  Cart = 2,
+  Buy = 3,
+}
+const mode = ref<SkuMode>(SkuMode.Both)
+// 打开弹窗
+const openSkuPopup = (val: SkuMode) => {
+  isShowSku.value = true
+  mode.value = val
+}
 </script>
 
 <template>
   <!-- SKU组件 -->
-  <vk-data-goods-sku-popup v-model="isShowSKU" :localdata="localdata" />
+  <vk-data-goods-sku-popup
+    v-model="isShowSku"
+    :localdata="localdata"
+    :mode="mode"
+    add-cart-background-color="#ffa868"
+    buy-now-background-color="#27ba9b"
+  />
 
   <scroll-view v-if="isFinish" scroll-y class="viewport">
     <!-- 基本信息 -->
@@ -113,7 +130,7 @@ const localdata = ref({} as SkuPopupLocaldata)
       <view class="action">
         <view class="item arrow">
           <text class="label">选择</text>
-          <text class="text ellipsis" @tap="isShowSKU = true"> 请选择商品规格 </text>
+          <text class="text ellipsis" @tap="openSkuPopup(SkuMode.Both)"> 请选择商品规格 </text>
         </view>
         <view class="item arrow" @tap="onPopup('address')">
           <text class="label">送至</text>
@@ -186,8 +203,8 @@ const localdata = ref({} as SkuPopupLocaldata)
       </navigator>
     </view>
     <view class="buttons">
-      <view class="addcart"> 加入购物车 </view>
-      <view class="buynow"> 立即购买 </view>
+      <view class="addcart" @tap="openSkuPopup(SkuMode.Cart)"> 加入购物车 </view>
+      <view class="buynow" @tap="openSkuPopup(SkuMode.Buy)"> 立即购买 </view>
     </view>
   </view>
 
