@@ -1,8 +1,13 @@
 <script setup lang="ts">
-import { getMemberOrderAPI } from '@/services/order'
+import {
+  deleteMemberOrderAPI,
+  getMemberOrderAPI,
+  putMemberOrderByIdReceiptAPI,
+} from '@/services/order'
 import type { OrderItem, OrderListParams } from '@/types/order'
 import { onMounted, ref } from 'vue'
 import { orderStateList, OrderState } from '@/services/constants'
+import { getPayMockAPI, getPayWxPayMiniPayAPI } from '@/services/pay'
 
 // 获取屏幕边界到安全区域距离
 const { safeAreaInsets } = uni.getSystemInfoSync()
@@ -35,18 +40,92 @@ const getMemberOrderData = async () => {
   }
 }
 
-// 下拉触底
+// 上拉触底
 const onScrolltolower = () => {
   getMemberOrderData()
+}
+
+// 下拉刷新
+const isTrigger = ref(false)
+const onRefresherrefresh = async () => {
+  // 触发
+  isTrigger.value = true
+  // 重置界面设置
+  queryParams.page = 1
+  orderList.value = []
+  isFinish.value = false
+  // 等待
+  await getMemberOrderData()
+  // 不触发 关闭
+  isTrigger.value = false
 }
 
 onMounted(() => {
   getMemberOrderData()
 })
+
+// 点击支付
+const onOrderPay = async (id: string) => {
+  if (import.meta.env.DEV) {
+    // 开发环境 使用模拟接口
+    await getPayMockAPI(id)
+  } else {
+    // 生产环境 使用正式微信支付接口
+    const res = await getPayWxPayMiniPayAPI(id)
+    await wx.requestPayment(res.result)
+  }
+  // 支付成功 轻提示 改变订单状态
+  uni.showToast({ title: '支付成功' })
+  const order = orderList.value.find((item) => item.id === id)
+  order!.orderState = OrderState.DaiFaHuo
+}
+
+// 确认收货
+const onOrderConfirm = (id: string) => {
+  // 给用户一个弹框提示 二次确认
+  uni.showModal({
+    content: '为保障您的权益，请收到货并确认无误后，再确认收货',
+    success: async (success) => {
+      if (success.confirm) {
+        await putMemberOrderByIdReceiptAPI(id)
+        const order = orderList.value.find((item) => item.id === id)
+        order!.orderState = OrderState.YiWanCheng
+        uni.showToast({ title: '确认收货成功' })
+      }
+    },
+  })
+}
+
+// 删除订单
+const onOrderDelete = (id: string) => {
+  // 二次确认
+  uni.showModal({
+    content: '是否删除订单',
+    success: async (success) => {
+      if (success.confirm) {
+        // 发送请求删除
+        await deleteMemberOrderAPI([id])
+        uni.showToast({ title: '删除订单成功' })
+        // 重置界面设置
+        queryParams.page = 1
+        orderList.value = []
+        isFinish.value = false
+        getMemberOrderData()
+      }
+    },
+  })
+}
 </script>
 
 <template>
-  <scroll-view scroll-y class="orders" @scrolltolower="onScrolltolower">
+  <scroll-view
+    scroll-y
+    class="orders"
+    refresher-enabled
+    :refresher-triggered="isTrigger"
+    @refresherrefresh="onRefresherrefresh"
+    @scrolltolower="onScrolltolower"
+  >
     <view class="card" v-for="item in orderList" :key="item.id">
       <!-- 订单信息 -->
       <view class="status">
@@ -54,7 +133,11 @@ onMounted(() => {
         <!-- 订单状态文字 -->
         <text>{{ orderStateList[item.orderState].text }}</text>
         <!-- 待评价/已完成/已取消 状态: 展示删除订单 -->
-        <text v-if="item.orderState >= OrderState.DaiPingJia" class="icon-delete"></text>
+        <text
+          v-if="item.orderState >= OrderState.DaiPingJia"
+          class="icon-delete"
+          @tap="onOrderDelete(item.id)"
+        ></text>
       </view>
       <!-- 商品信息，点击商品跳转到订单详情，不是商品详情 -->
       <navigator
@@ -82,7 +165,7 @@ onMounted(() => {
       <view class="action">
         <!-- 待付款状态：显示去支付按钮 -->
         <template v-if="item.orderState === OrderState.DaiFuKuan">
-          <view class="button primary">去支付</view>
+          <view class="button primary" @tap="onOrderPay(item.id)">去支付</view>
         </template>
         <template v-else>
           <navigator
@@ -93,7 +176,10 @@ onMounted(() => {
             再次购买
           </navigator>
           <!-- 待收货状态: 展示确认收货 -->
-          <view v-if="item.orderState === OrderState.DaiShouHuo" class="button primary"
+          <view
+            v-if="item.orderState === OrderState.DaiShouHuo"
+            @tap="onOrderConfirm(item.id)"
+            class="button primary"
             >确认收货</view
           >
         </template>
