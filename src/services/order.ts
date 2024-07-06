@@ -41,22 +41,9 @@ export const getMemberOrderRepurchaseByIdAPI = (id: string) =>
     url: `/member/order/repurchase/${id}`,
   })
 
-// 获取微信支付参数
-export const getPayWxPayMiniPayAPI = (orderId: string) =>
-  http<WechatMiniprogram.RequestPaymentOption>({
-    method: 'GET',
-    url: '/pay/wxPay/miniPay',
-    data: {
-      orderId,
-    },
-  })
-
-// 模拟支付-内测版
-export const getPayMockAPI = (orderId: string) =>
+// 模拟发货-内测版
+export const getMemberOrderConsignmentByIdAPI = (id: string) =>
   http({
     method: 'GET',
-    url: '/pay/mock',
-    data: {
-      orderId,
-    },
+    url: `/member/order/consignment/${id}`,
   })
