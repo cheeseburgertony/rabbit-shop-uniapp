@@ -1,5 +1,7 @@
+import type { PageParams } from '@/types/global'
 import type {
   OrderCreateParams,
+  OrderListResult,
   OrderLogisticResult,
   OrderPreResult,
   OrderResult,
@@ -85,4 +87,12 @@ export const deleteMemberOrderAPI = (ids: string[]) =>
     data: {
       ids,
     },
+  })
+
+// 获取订单列表
+export const getMemberOrderAPI = (data: PageParams) =>
+  http<OrderListResult>({
+    method: 'GET',
+    url: '/member/order',
+    data,
   })
