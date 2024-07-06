@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useGuseeList } from '@/composables'
+import { useGuessList } from '@/composables'
 import { useMemberStore } from '@/stores'
 
 // 获取屏幕边界到安全区域距离
@@ -15,7 +15,7 @@ const orderTypes = [
 const memeberStore = useMemberStore()
 
 // 从composables中取出使用
-const { guessRef, onScrolltolower } = useGuseeList()
+const { guessRef, onScrolltolower } = useGuessList()
 </script>
 
 <template>
@@ -43,7 +43,8 @@ const { guessRef, onScrolltolower } = useGuseeList()
             class="avatar gray"
             mode="aspectFill"
             src="http://yjy-xiaotuxian-dev.oss-cn-beijing.aliyuncs.com/picture/2021-04-06/db628d42-88a7-46e7-abb8-659448c33081.png"
-          ></image>
+          >
+          </image>
         </navigator>
         <view class="meta">
           <navigator url="/pages/login/login" hover-class="none" class="nickname">
@@ -200,17 +201,20 @@ page {
     display: flex;
     justify-content: space-between;
     padding: 40rpx 20rpx 10rpx;
+
     .navigator,
     .contact {
       text-align: center;
       font-size: 24rpx;
       color: #333;
+
       &::before {
         display: block;
         font-size: 60rpx;
         color: #ff9545;
       }
     }
+
     .contact {
       padding: 0;
       margin: 0;

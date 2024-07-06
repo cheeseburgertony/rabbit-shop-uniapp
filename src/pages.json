@@ -146,6 +146,7 @@
 				{
 					"path": "detail/detail",
 					"style": {
+						"navigationStyle": "custom",
 						"navigationBarTitleText": "订单详情"
 					}
 				}

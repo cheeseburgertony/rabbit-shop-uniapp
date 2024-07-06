@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { InputNumberBoxEvent } from '@/components/vk-data-input-number-box/vk-data-input-number-box'
-import { useGuseeList } from '@/composables'
+import { useGuessList } from '@/composables'
 import {
   deleteMemberCartAPI,
   getMemberCartAPI,
@@ -103,7 +103,7 @@ const onPayment = () => {
 }
 
 // 下拉触底更新猜你喜欢
-const { guessRef, onScrolltolower } = useGuseeList()
+const { guessRef, onScrolltolower } = useGuessList()
 </script>
 
 <template>

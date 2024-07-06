@@ -7,7 +7,7 @@ import type { BannerItem, CategoryItem, HotItem } from '@/types/home'
 import CategoryPanel from './components/CategoryPanel.vue'
 import HotPanel from './components/HotPanel.vue'
 import PageSkeleton from './components/PageSkeleton.vue'
-import { useGuseeList } from '@/composables'
+import { useGuessList } from '@/composables'
 
 // 获取banner数据
 const bannerList = ref<BannerItem[]>([])
@@ -31,7 +31,7 @@ const getHomeHotData = async () => {
 }
 
 // 滚动到底部
-const { guessRef, onScrolltolower } = useGuseeList()
+const { guessRef, onScrolltolower } = useGuessList()
 
 // 加载时触发
 const isLoading = ref(false)
