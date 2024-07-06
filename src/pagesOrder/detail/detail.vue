@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useGuessList } from '@/composables'
 import {
+  deleteMemberOrderAPI,
   getMemberOrderByIdAPI,
   getMemberOrderByIdLogisticsAPI,
   getMemberOrderConsignmentByIdAPI,
@@ -184,6 +185,25 @@ const onCancelOrder = async () => {
   // 关闭popup弹框
   popup.value!.close!()
 }
+
+// 删除订单
+const onOrderDelete = () => {
+  // 二次确认
+  uni.showModal({
+    content: '是否删除订单',
+    success: async (success) => {
+      if (success.confirm) {
+        // 发送请求删除
+        await deleteMemberOrderAPI([query.id])
+        uni.showToast({ title: '删除订单成功' })
+        setTimeout(() => {
+          // 关闭当前页，跳转到订单列表
+          uni.redirectTo({ url: '/pagesOrder/list/list' })
+        }, 400)
+      }
+    },
+  })
+}
 </script>
 
 <template>
@@ -356,7 +376,11 @@ const onCancelOrder = async () => {
             <!-- 待评价状态: 展示去评价 -->
             <view class="button" v-if="order.orderState === OrderState.DaiPingJia"> 去评价 </view>
             <!-- 待评价/已完成/已取消 状态: 展示删除订单 -->
-            <view class="button delete" v-if="order.orderState >= OrderState.DaiPingJia">
+            <view
+              class="button delete"
+              v-if="order.orderState >= OrderState.DaiPingJia"
+              @tap="onOrderDelete"
+            >
               删除订单
             </view>
           </template>

@@ -76,3 +76,13 @@ export const putMemberOrderByIdCancelAPI = (id: string, cancelReason: string) =>
       cancelReason,
     },
   })
+
+// 删除订单
+export const deleteMemberOrderAPI = (ids: string[]) =>
+  http({
+    method: 'DELETE',
+    url: '/member/order',
+    data: {
+      ids,
+    },
+  })
