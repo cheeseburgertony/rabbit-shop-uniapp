@@ -70,9 +70,11 @@ const onOrderPay = async (id: string) => {
     // 开发环境 使用模拟接口
     await getPayMockAPI(id)
   } else {
+    // #ifdef MP-WEIXIN
     // 生产环境 使用正式微信支付接口
     const res = await getPayWxPayMiniPayAPI(id)
     await wx.requestPayment(res.result)
+    // #endif
   }
   // 支付成功 轻提示 改变订单状态
   uni.showToast({ title: '支付成功' })
