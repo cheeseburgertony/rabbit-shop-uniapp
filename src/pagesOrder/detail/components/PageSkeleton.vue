@@ -76,7 +76,7 @@
           </navigator>
           <view class="action action">
             <view
-              class="button primary sk-transparent sk-text-28-3333-333 sk-text"
+              class="button sk-transparent sk-text-28-3333-333 sk-text"
               style="background-position-x: 50%"
               >申请售后</view
             >
