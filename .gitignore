@@ -11,3 +11,6 @@ node_modules
 dist
 .DS_Store
 *.local
+
+# uniCloud云开发
+uni_modules
