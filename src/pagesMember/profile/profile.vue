@@ -24,6 +24,7 @@ onLoad(() => {
 
 // 修改用户头像
 const onAvatarChange = () => {
+  // #ifdef MP-WEIXIN
   uni.chooseMedia({
     // 选择上传文件个数
     count: 1,
@@ -33,24 +34,43 @@ const onAvatarChange = () => {
       // 取出本地图片的临时路径
       const { tempFilePath } = res.tempFiles[0]
       // 调用微信接口上传文件
-      uni.uploadFile({
-        url: '/member/profile/avatar',
-        name: 'file',
-        filePath: tempFilePath,
-        success: (res) => {
-          // 根据状态码判断是否上传成功
-          if (res.statusCode === 200) {
-            // 更新头像
-            profile.value!.avatar = JSON.parse(res.data).result.avatar
-            // 同步到Store
-            memberStore.profile!.avatar = profile.value.avatar
-            uni.showToast({ icon: 'success', title: '头像更新成功' })
-          } else {
-            uni.showToast({ icon: 'error', title: '出现错误' })
-          }
-          console.log(res)
-        },
-      })
+      uploadFile(tempFilePath)
+    },
+  })
+  // #endif
+
+  // #ifdef H5 || APP-PLUS
+  uni.chooseImage({
+    count: 1,
+    success: (res) => {
+      // 取出本地图片的临时路径
+      const tempFilePath = res.tempFilePaths[0]
+      // 调用微信接口上传文件
+      uploadFile(tempFilePath)
+    },
+  })
+  // #endif
+}
+
+// 上传头像
+const uploadFile = (tempFilePath: string) => {
+  // 调用微信接口上传文件
+  uni.uploadFile({
+    url: '/member/profile/avatar',
+    name: 'file',
+    filePath: tempFilePath,
+    success: (res) => {
+      // 根据状态码判断是否上传成功
+      if (res.statusCode === 200) {
+        // 更新头像
+        profile.value!.avatar = JSON.parse(res.data).result.avatar
+        // 同步到Store
+        memberStore.profile!.avatar = profile.value.avatar
+        uni.showToast({ icon: 'success', title: '头像更新成功' })
+      } else {
+        uni.showToast({ icon: 'error', title: '出现错误' })
+      }
+      console.log(res)
     },
   })
 }

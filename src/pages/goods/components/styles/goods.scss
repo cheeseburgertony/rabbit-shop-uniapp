@@ -3,12 +3,6 @@ uni-image {
   width: 100%;
   height: 100%;
 }
-
-/* 解决navigator打包后外面多套一层a标签导致flex: 1失效 */
-.toolbar .icons .navigator-wrap {
-  flex: 1;
-}
-
 /* #endif */
 page {
   height: 100%;
