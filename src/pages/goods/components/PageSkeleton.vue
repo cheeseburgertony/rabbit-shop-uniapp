@@ -103,7 +103,8 @@
   </view>
 </template>
 
-<style>
+<style lang="scss">
+@import './styles/goods.scss';
 .sk-transparent {
   color: transparent !important;
 }
