@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useGuessList } from '@/composables'
-import { getMemberOrderByIdAPI } from '@/services/order'
+import { getMemberOrderByIdAPI, getPayMockAPI, getPayWxPayMiniPayAPI } from '@/services/order'
 import type { OrderResult } from '@/types/order'
 import { onLoad, onReady } from '@dcloudio/uni-app'
 import { ref } from 'vue'
@@ -109,6 +109,20 @@ const onTimeup = () => {
   // 将状态改为已取消
   order.value!.orderState = OrderState.YiQuXiao
 }
+
+// 点击支付
+const onOrderPay = async () => {
+  if (import.meta.env.DEV) {
+    // 开发环境 使用模拟接口
+    await getPayMockAPI(query.id)
+  } else {
+    // 生产环境 使用正式微信支付接口
+    const res = await getPayWxPayMiniPayAPI(query.id)
+    await wx.requestPayment(res.result)
+  }
+  // 支付成功 关闭当前页 跳转到支付成功页
+  uni.redirectTo({ url: `/pagesOrder/payment/payment?id=${query.id}` })
+}
 </script>
 
 <template>
@@ -145,7 +159,7 @@ const onTimeup = () => {
                 @timeup="onTimeup"
               ></uni-countdown>
             </view>
-            <view class="button">去支付</view>
+            <view class="button" @tap="onOrderPay">去支付</view>
           </template>
           <!-- 其他订单状态:展示再次购买按钮 -->
           <template v-else>
@@ -252,7 +266,7 @@ const onTimeup = () => {
         <view class="toolbar" :style="{ paddingBottom: safeAreaInsets?.bottom + 'px' }">
           <!-- 待付款状态:展示支付按钮 -->
           <template v-if="true">
-            <view class="button primary"> 去支付 </view>
+            <view class="button primary" @tap="onOrderPay"> 去支付 </view>
             <view class="button" @tap="popup?.open?.()"> 取消订单 </view>
           </template>
           <!-- 其他订单状态:按需展示按钮 -->
