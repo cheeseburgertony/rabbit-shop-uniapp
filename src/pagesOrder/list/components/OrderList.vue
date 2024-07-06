@@ -11,17 +11,33 @@ const props = defineProps<{
   orderState: number
 }>()
 
-const queryParams: OrderListParams = {
+const queryParams: Required<OrderListParams> = {
   page: 1,
   pageSize: 5,
   orderState: props.orderState,
 }
 
+// 是否全部加载完成
+const isFinish = ref(false)
 const orderList = ref<OrderItem[]>([])
+// 发送请求
 const getMemberOrderData = async () => {
+  // 如果全部加载完成则不继续发送请求
+  if (isFinish.value) return uni.showToast({ icon: 'none', title: '没有数据了~' })
   const res = await getMemberOrderAPI(queryParams)
-  console.log(res)
-  orderList.value = res.result.items
+  // 获取数据后追加到原数组
+  orderList.value.push(...res.result.items)
+  // 进行页数判断
+  if (queryParams.page < res.result.pages) {
+    queryParams.page++
+  } else {
+    isFinish.value = true
+  }
+}
+
+// 下拉触底
+const onScrolltolower = () => {
+  getMemberOrderData()
 }
 
 onMounted(() => {
@@ -30,7 +46,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <scroll-view scroll-y class="orders">
+  <scroll-view scroll-y class="orders" @scrolltolower="onScrolltolower">
     <view class="card" v-for="item in orderList" :key="item.id">
       <!-- 订单信息 -->
       <view class="status">
@@ -85,7 +101,7 @@ onMounted(() => {
     </view>
     <!-- 底部提示文字 -->
     <view class="loading-text" :style="{ paddingBottom: safeAreaInsets?.bottom + 'px' }">
-      {{ true ? '没有更多数据~' : '正在加载...' }}
+      {{ isFinish ? '没有更多数据~' : '正在加载...' }}
     </view>
   </scroll-view>
 </template>
