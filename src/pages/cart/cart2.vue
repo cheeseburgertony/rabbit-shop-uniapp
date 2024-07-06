@@ -9,3 +9,9 @@ const { safeAreaInsets } = uni.getSystemInfoSync()
 <template>
   <CartMain :safeDistance="safeAreaInsets?.bottom"></CartMain>
 </template>
+
+<style lang="scss">
+page {
+  height: 100%;
+}
+</style>

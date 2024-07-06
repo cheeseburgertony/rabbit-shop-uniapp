@@ -156,7 +156,14 @@
   </view>
 </template>
 
-<style>
+<style lang="scss">
+/* #ifdef H5 || APP-PLUS */
+/* 修复H5端 App端样式被隔离 */
+@import '@/components/styles/XtxGuess.scss';
+@import '@/components/styles/XtxSwiper.scss';
+@import './styles/CategoryPanel.scss';
+@import './styles/HotPanel.scss';
+/* #endif */
 .sk-transparent {
   color: transparent !important;
 }

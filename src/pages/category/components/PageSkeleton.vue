@@ -187,17 +187,12 @@
   </view>
 </template>
 
-<style>
-/*
-此文件为开发者工具生成，生成时间: 2024/7/3下午6:24:11
-
-在 D:\Front-end\Uniapp\02-Uniapp-小兔鲜项目\rabbit-shop\dist\dev\mp-weixin\pages\category\category.wxss 中引入样式
-```
-@import "./category.skeleton.wxss";
-```
-
-更多详细信息可以参考文档：https://developers.weixin.qq.com/miniprogram/dev/devtools/skeleton.html
-*/
+<style lang="scss">
+/* #ifdef H5 || APP-PLUS */
+/* 修复H5端 App端样式被隔离 */
+@import '@/components/styles/XtxSwiper.scss';
+@import './styles/category.scss';
+/* #endif */
 .sk-transparent {
   color: transparent !important;
 }
