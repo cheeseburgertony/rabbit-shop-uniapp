@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { useGuessList } from '@/composables'
-import { getMemberOrderByIdAPI, getMemberOrderConsignmentByIdAPI } from '@/services/order'
+import {
+  getMemberOrderByIdAPI,
+  getMemberOrderConsignmentByIdAPI,
+  putMemberOrderByIdReceiptAPI,
+} from '@/services/order'
 import type { OrderResult } from '@/types/order'
 import { onLoad, onReady } from '@dcloudio/uni-app'
 import { ref } from 'vue'
@@ -129,10 +133,28 @@ const onOrderPay = async () => {
 const isDev = import.meta.env.DEV
 // 模拟发货
 const onOrderSend = async () => {
-  await getMemberOrderConsignmentByIdAPI(query.id)
-  // 将状态调为待收货
-  uni.showToast({ title: '模拟发货成功' })
-  order.value!.orderState = OrderState.DaiShouHuo
+  // 如果不是在开发环境下vite打包会自动优化 （简单来说就是关于在开发环境下的代码不会被打包）
+  if (isDev) {
+    await getMemberOrderConsignmentByIdAPI(query.id)
+    // 将状态调为待收货
+    uni.showToast({ title: '模拟发货成功' })
+    order.value!.orderState = OrderState.DaiShouHuo
+  }
+}
+
+// 确认收获
+const onOrderConfirm = () => {
+  // 给用户一个弹框提示 二次确认
+  uni.showModal({
+    content: '为保障您的权益，请收到货并确认无误后，再确认收货',
+    success: async (success) => {
+      if (success.confirm) {
+        const res = await putMemberOrderByIdReceiptAPI(query.id)
+        order.value = res.result
+        uni.showToast({ title: '确认收货成功' })
+      }
+    },
+  })
 }
 </script>
 
@@ -191,6 +213,14 @@ const onOrderSend = async () => {
                 class="button"
               >
                 模拟发货
+              </view>
+              <!-- 待收货状态： 展示确认收货按钮 -->
+              <view
+                v-if="order.orderState === OrderState.DaiShouHuo"
+                @tap="onOrderConfirm"
+                class="button"
+              >
+                确认收货
               </view>
             </view>
           </template>
