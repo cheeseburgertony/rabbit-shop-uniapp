@@ -66,3 +66,13 @@ export const getMemberOrderByIdLogisticsAPI = (id: string) =>
     method: 'GET',
     url: `/member/order/${id}/logistics`,
   })
+
+// 取消订单
+export const putMemberOrderByIdCancelAPI = (id: string, cancelReason: string) =>
+  http<OrderResult>({
+    method: 'PUT',
+    url: `/member/order/${id}/cancel`,
+    data: {
+      cancelReason,
+    },
+  })
