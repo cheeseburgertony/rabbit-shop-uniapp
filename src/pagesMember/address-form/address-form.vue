@@ -42,6 +42,7 @@ onLoad(() => {
 // 设置导航栏标题
 uni.setNavigationBarTitle({ title: query.id ? '修改地址' : '新建地址' })
 
+// #ifdef MP-WEIXIN
 // 修改地区
 const onRegionChange: UniHelper.RegionPickerOnChange = (e) => {
   // 前端展示
@@ -51,6 +52,17 @@ const onRegionChange: UniHelper.RegionPickerOnChange = (e) => {
   // 将获取到数据传入到表单收集
   Object.assign(form.value, { provinceCode, cityCode, countyCode })
 }
+// #endif
+
+// #ifdef H5 || APP-PLUS
+// H5和app端修改地址
+const onCityChange: UniHelper.UniDataPickerOnChange = (e) => {
+  // 发生给后端的数据
+  const [provinceCode, cityCode, countyCode] = e.detail.value.map((item) => item.value)
+  // 将获取到数据传入到表单收集
+  Object.assign(form.value, { provinceCode, cityCode, countyCode })
+}
+// #endif
 
 // 修改默认地址
 const onSwitchChange: UniHelper.SwitchOnChange = (e) => {
@@ -68,7 +80,7 @@ const rules: UniHelper.UniFormsRules = {
       { pattern: /^1[3-9]\d{9}$/, errorMessage: '请输入正确的手机号码' },
     ],
   },
-  fullLocation: {
+  countyCode: {
     rules: [{ required: true, errorMessage: '请选择所在地区' }],
   },
   address: {
@@ -114,7 +126,7 @@ const onSubmit = async () => {
         <text class="label">手机号码</text>
         <input class="input" placeholder="请填写收货人手机号码" v-model="form.contact" />
       </uni-forms-item>
-      <uni-forms-item name="fullLocation" class="form-item">
+      <uni-forms-item name="countyCode" class="form-item">
         <text class="label">所在地区</text>
         <!-- #ifdef MP-WEIXIN -->
         <picker @change="onRegionChange" class="picker" mode="region" :value="form.fullLocation">
@@ -132,6 +144,9 @@ const onSubmit = async () => {
           :step-searh="true"
           self-field="code"
           parent-field="parent_code"
+          :clear-icon="false"
+          @change="onCityChange"
+          v-model="form.countyCode"
         >
         </uni-data-picker>
         <!-- #endif -->
@@ -156,6 +171,14 @@ const onSubmit = async () => {
 </template>
 
 <style lang="scss">
+/* #ifdef H5 || APP-PLUS */
+// 修改地址选择picker样式
+:deep(.selected-area) {
+  height: auto;
+  flex: 0 1 auto;
+}
+
+/* #endif */
 page {
   background-color: #f4f4f4;
 }
